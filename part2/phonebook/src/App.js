@@ -1,35 +1,43 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 
 import Filter from "./components/Filter";
 import Form from "./components/Form";
 import PersonsList from "./components/PersonsList";
+import { getAll, create, update, deleteOne } from "./services/PhonebookServices";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [filterText, setFilterText] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((response) => setPersons(response.data))
-      .catch((err) => console.log("error fetching", err));
+    getAll().then((responseData) => setPersons(responseData));
   }, []);
 
   const getFilteredPersons = () => {
-    return persons.filter((person) => person.name.toLowerCase().includes(filterText));
+    return persons.filter((person) => person.name?.toLowerCase().includes(filterText));
   };
 
   const handleAdd = (newPerson) => {
-    if (persons.findIndex((person) => person.name.toLowerCase() === newPerson.name.toLowerCase()) > -1) {
-      alert(`${newPerson.name} is already added to Phonebook.`);
-      return;
+    let existingPerson = persons.find((person) => person.name.toLowerCase() === newPerson.name.toLowerCase());
+    if (existingPerson) {
+      if (window.confirm(`${newPerson.name} is already added to Phonebook, replace the old number with new one?`)) {
+        update({ ...newPerson, id: existingPerson.id }).then((responseData) =>
+          setPersons(persons.map((person) => (person.id === responseData.id ? responseData : person)))
+        );
+      }
+    } else {
+      create(newPerson).then((responseData) => setPersons(persons.concat(responseData)));
     }
-    setPersons(persons.concat({ ...newPerson, id: persons.length + 1 }));
   };
 
   const handleFilter = (filter) => {
     setFilterText(filter);
+  };
+
+  const handleDelete = (id, name) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      deleteOne(id).then(() => setPersons(persons.filter((person) => person.id !== id)));
+    }
   };
 
   return (
@@ -38,7 +46,7 @@ const App = () => {
       <Filter handleFilter={handleFilter} />
       <Form handleAdd={handleAdd} />
       <h2>Numbers</h2>
-      <PersonsList persons={getFilteredPersons()} />
+      <PersonsList persons={getFilteredPersons()} handleDelete={handleDelete} />
     </div>
   );
 };
