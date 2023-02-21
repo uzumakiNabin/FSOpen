@@ -2,14 +2,21 @@ const PersonsList = ({ persons, handleDelete }) => {
   return (
     <div>
       {persons.length > 0 ? (
-        <>
-          {persons.map((person) => (
-            <p key={person.id}>
-              {person.name} {person.number}
-              <button onClick={() => handleDelete(person.id, person.name)}>delete</button>
-            </p>
-          ))}
-        </>
+        <table>
+          <tbody>
+            {persons.map((person) => (
+              <tr key={person.id}>
+                <td style={{ padding: "0px 5px", textAlign: "left" }}>{person.name}</td>
+                <td style={{ padding: "0px 5px", textAlign: "right", fontFamily: "consolas" }}>{person.number}</td>
+                <td>
+                  <button className="btn-delete" onClick={() => handleDelete(person.id, person.name)}>
+                    delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : (
         "..."
       )}
