@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const blogSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: [true, "name is required"],
+    required: [true, "title is required"],
   },
   author: {
     type: String,
@@ -15,6 +15,7 @@ const blogSchema = new mongoose.Schema({
   },
   likes: {
     type: Number,
+    default: 0,
   },
 });
 
