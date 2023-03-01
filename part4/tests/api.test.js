@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
 const Blog = require("../models/blog");
-const { initialBlogs, blogsInDb } = require("./api_test_helper");
+const { initialBlogs, nonExistingId, blogsInDb } = require("./api_test_helper");
 
 const api = supertest(app);
 
@@ -91,6 +91,69 @@ describe("if title or url are missing, backend responds with status code 400", (
       likes: 10,
     };
     await api.post("/api/blogs").send(newBlog).expect(400);
+  });
+});
+
+describe("deleting blog", () => {
+  test("successfull delete will send status code 204", async () => {
+    const currentBlogs = await blogsInDb();
+    const blogToDelete = currentBlogs[0];
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+  });
+
+  test("trying to delete non existing blog will send status code 404", async () => {
+    const nonExistingBlogId = await nonExistingId();
+    await api.delete(`/api/blogs/${nonExistingBlogId}`).expect(404);
+  });
+});
+
+describe("updating blog", () => {
+  test("successfull update will send status code 200", async () => {
+    const currentBlogs = await blogsInDb();
+    const blogToUpdate = currentBlogs[0];
+    const blogWithUpdatedValues = {
+      title: blogToUpdate.title + "(updated)",
+      author: blogToUpdate.author + "(updated)",
+      url: blogToUpdate.url + "_updated",
+      likes: blogToUpdate.likes + 10,
+    };
+    await api.put(`/api/blogs/${blogToUpdate.id}`).send(blogWithUpdatedValues).expect(200);
+  });
+
+  test("title missing will yield status code 400", async () => {
+    const currentBlogs = await blogsInDb();
+    const blogToUpdate = currentBlogs[0];
+    const blogWithUpdatedValues = {
+      title: "",
+      author: blogToUpdate.author + "(updated)",
+      url: blogToUpdate.url + "_updated",
+      likes: blogToUpdate.likes + 10,
+    };
+    await api.put(`/api/blogs/${blogToUpdate.id}`).send(blogWithUpdatedValues).expect(400);
+  });
+
+  test("url missing will yield status code 400", async () => {
+    const currentBlogs = await blogsInDb();
+    const blogToUpdate = currentBlogs[0];
+    const blogWithUpdatedValues = {
+      title: blogToUpdate.title + "(updated)",
+      author: blogToUpdate.author + "(updated)",
+      url: "",
+      likes: blogToUpdate.likes + 10,
+    };
+    await api.put(`/api/blogs/${blogToUpdate.id}`).send(blogWithUpdatedValues).expect(400);
+  });
+
+  test("author missing will yield status code 400", async () => {
+    const currentBlogs = await blogsInDb();
+    const blogToUpdate = currentBlogs[0];
+    const blogWithUpdatedValues = {
+      title: blogToUpdate.title + "(updated)",
+      author: "",
+      url: blogToUpdate.url + "_updated",
+      likes: blogToUpdate.likes + 10,
+    };
+    await api.put(`/api/blogs/${blogToUpdate.id}`).send(blogWithUpdatedValues).expect(400);
   });
 });
 
