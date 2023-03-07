@@ -11,7 +11,7 @@ blogsRouter.post("/", async (request, response, next) => {
   const body = request.body;
   try {
     if (!request.user) {
-      response.status(401).end();
+      return response.status(401).send({ error: "invalid token" });
     }
     const user = await User.findById(request.user);
     const blog = new Blog({ ...body, user: user._id });
@@ -35,7 +35,7 @@ blogsRouter.get("/:id", async (request, response) => {
 blogsRouter.delete("/:id", async (request, response, next) => {
   try {
     if (!request.user) {
-      response.status(401).end();
+      return response.status(401).send({ error: "invalid token" });
     }
     const blogToBeDeleted = await Blog.findById(request.params.id);
     if (blogToBeDeleted) {
@@ -43,12 +43,14 @@ blogsRouter.delete("/:id", async (request, response, next) => {
         const deletedBlog = await Blog.findByIdAndRemove(request.params.id);
         if (deletedBlog) {
           response.status(204).end();
+        } else {
+          response.status(404).send({ error: "cannot find" });
         }
       } else {
-        return response.status(401).end();
+        return response.status(401).send({ error: "unauthorized" });
       }
     } else {
-      response.status(404).end();
+      response.status(404).send({ error: "cannot find" });
     }
   } catch (ex) {
     next(ex);
@@ -57,13 +59,25 @@ blogsRouter.delete("/:id", async (request, response, next) => {
 
 blogsRouter.put("/:id", async (request, response, next) => {
   try {
-    const blog = request.body;
-    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
-      new: true,
-      runValidators: true,
-      context: "query",
-    });
-    response.json(updatedBlog);
+    if (!request.user) {
+      return response.status(401).send({ error: "invalid token" });
+    }
+    const blogToBeUpdated = await Blog.findById(request.params.id);
+    if (blogToBeUpdated) {
+      if (request.user === blogToBeUpdated.user.toString()) {
+        const blog = request.body;
+        const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
+          new: true,
+          runValidators: true,
+          context: "query",
+        });
+        response.json(updatedBlog);
+      } else {
+        return response.status(401).send({ error: "unauthorized" });
+      }
+    } else {
+      response.status(404).send({ error: "cannot find" });
+    }
   } catch (ex) {
     next(ex);
   }
