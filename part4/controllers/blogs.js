@@ -15,7 +15,7 @@ blogsRouter.post("/", async (request, response, next) => {
     }
     const user = await User.findById(request.user);
     const blog = new Blog({ ...body, user: user._id });
-    const savedBlog = await blog.save();
+    const savedBlog = await (await blog.save()).populate("user", { username: 1, name: 1 });
     await User.findByIdAndUpdate(request.user, { $push: { blogs: savedBlog._id } });
     response.status(201).json(savedBlog);
   } catch (ex) {
@@ -66,11 +66,13 @@ blogsRouter.put("/:id", async (request, response, next) => {
     if (blogToBeUpdated) {
       if (request.user === blogToBeUpdated.user.toString()) {
         const blog = request.body;
-        const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
-          new: true,
-          runValidators: true,
-          context: "query",
-        });
+        const updatedBlog = await (
+          await Blog.findByIdAndUpdate(request.params.id, blog, {
+            new: true,
+            runValidators: true,
+            context: "query",
+          })
+        ).populate("user", { username: 1, name: 1 });
         response.json(updatedBlog);
       } else {
         return response.status(401).send({ error: "unauthorized" });
