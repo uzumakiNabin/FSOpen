@@ -1,7 +1,7 @@
 import deepFreeze from "deep-freeze";
 import anecdoteReducer from "./anecdoteReducer";
 
-describe("unicafe reducer", () => {
+describe("anecdote reducer", () => {
   const initialState = [
     {
       id: 1,
