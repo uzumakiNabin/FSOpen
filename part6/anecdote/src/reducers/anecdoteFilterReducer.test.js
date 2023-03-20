@@ -15,7 +15,7 @@ describe("anecdote filter reducer", () => {
 
   test("filter is changed", () => {
     const action = {
-      type: "SET_FILTER",
+      type: "anecdoteFilter/setFilter",
       payload: "new filter",
     };
     const state = initialState;

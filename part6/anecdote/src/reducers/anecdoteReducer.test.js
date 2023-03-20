@@ -12,8 +12,8 @@ describe("anecdote reducer", () => {
 
   test("vote is incremented", () => {
     const action = {
-      type: "VOTE",
-      payload: { voteId: 1 },
+      type: "anecdotes/voteAnecdote",
+      payload: 1,
     };
     const state = initialState;
 
@@ -28,8 +28,8 @@ describe("anecdote reducer", () => {
 
   test("new anecdote is created with correct id pattern", () => {
     const action = {
-      type: "ADD_ANECDOTE",
-      payload: { content: "this is test anecdote" },
+      type: "anecdotes/addNewAnecdote",
+      payload: "this is test anecdote",
     };
     const state = initialState;
 
@@ -41,5 +41,28 @@ describe("anecdote reducer", () => {
       content: "this is test anecdote",
       vote: 0,
     });
+  });
+
+  test("reset vote works", () => {
+    const action = {
+      type: "anecdotes/voteAnecdote",
+      payload: 1,
+    };
+    const state = initialState;
+
+    deepFreeze(state);
+    const newState = anecdoteReducer(state, action);
+    expect(newState).toContainEqual({
+      id: 1,
+      content: "If it hurts, do it more often.",
+      vote: 1,
+    });
+
+    deepFreeze(newState);
+    const resetAction = {
+      type: "anecdotes/resetVotes",
+    };
+    const afterResetState = anecdoteReducer(newState, resetAction);
+    expect(afterResetState).toEqual(state);
   });
 });

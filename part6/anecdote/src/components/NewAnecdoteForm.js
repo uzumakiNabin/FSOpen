@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux";
 
 import { addNewAnecdote } from "../reducers/anecdoteReducer";
+import { setNotification } from "../reducers/notificationReducer";
 
 const NewAnecdoteForm = () => {
   const dispatch = useDispatch();
@@ -8,6 +9,7 @@ const NewAnecdoteForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(addNewAnecdote(e.target.content.value));
+    dispatch(setNotification({ message: `you added '${e.target.content.value}'`, type: "success" }));
     e.target.content.value = "";
   };
 
