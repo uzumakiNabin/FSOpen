@@ -2,9 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 
 import Anecdote from "./Anecdote";
-import { getAnecdotesFromServer } from "../services/AnecdoteServices";
-import { setAnecdotes } from "../reducers/anecdoteReducer";
-import { setNotification } from "../reducers/notificationReducer";
+import { initializeAnecdotes } from "../reducers/anecdoteReducer";
 
 const AnecdoteList = () => {
   const list = useSelector(({ anecdotes, anecdoteFilter }) => anecdotes.filter((anecdote) => anecdote.content.includes(anecdoteFilter)));
@@ -12,16 +10,8 @@ const AnecdoteList = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const getAllAnecdotesAndSet = async () => {
-      try {
-        const anecdotesFromBackend = await getAnecdotesFromServer();
-        dispatch(setAnecdotes(anecdotesFromBackend));
-      } catch (ex) {
-        dispatch(setNotification({ message: ex.message, type: "error" }));
-      }
-    };
-    getAllAnecdotesAndSet();
-  }, []);
+    dispatch(initializeAnecdotes());
+  }, [dispatch]);
 
   return (
     <div>

@@ -4,17 +4,17 @@ import { useEffect } from "react";
 import { resetNotification } from "../reducers/notificationReducer";
 
 const Notification = () => {
-  const notificaton = useSelector((state) => state.notification);
+  const notification = useSelector((state) => state.notification);
   const dispatch = useDispatch();
 
   useEffect(() => {
     let notificationTimer = setTimeout(() => {
       dispatch(resetNotification());
-    }, 5000);
+    }, notification.duration * 1000);
     return () => clearTimeout(notificationTimer);
   });
 
-  return <>{notificaton.message ? <div className={`${notificaton.type} notif`}>{notificaton.message}</div> : ""}</>;
+  return <>{notification.message ? <div className={`${notification.type} notif`}>{notification.message}</div> : ""}</>;
 };
 
 export default Notification;

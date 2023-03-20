@@ -2,7 +2,7 @@ import deepFreeze from "deep-freeze";
 import notificationReducer from "./notificationReducer";
 
 describe("notification reducer", () => {
-  const initialState = { message: "", type: "" };
+  const initialState = { message: "", type: "", duration: "" };
 
   test("should return a proper initial state when called with undefined state", () => {
     const action = {
@@ -10,13 +10,13 @@ describe("notification reducer", () => {
     };
 
     const newState = notificationReducer(undefined, action);
-    expect(newState).toEqual({ message: "", type: "" });
+    expect(newState).toEqual(initialState);
   });
 
   test("notification is set properly", () => {
     const action = {
-      type: "notification/setNotification",
-      payload: { message: "test notification", type: "testtype" },
+      type: "notification/set",
+      payload: { message: "test notification", type: "testtype", duration: 10 },
     };
     const state = initialState;
 
@@ -27,8 +27,8 @@ describe("notification reducer", () => {
 
   test("notification is reset", () => {
     const setAction = {
-      type: "notification/setNotification",
-      payload: { message: "test notification", type: "testtype" },
+      type: "notification/set",
+      payload: { message: "test notification", type: "testtype", duration: 10 },
     };
     const state = initialState;
 
@@ -36,7 +36,7 @@ describe("notification reducer", () => {
     const newState = notificationReducer(state, setAction);
     expect(newState).toEqual(setAction.payload);
     const resetAction = {
-      type: "notification/resetNotification",
+      type: "notification/reset",
     };
 
     deepFreeze(newState);
