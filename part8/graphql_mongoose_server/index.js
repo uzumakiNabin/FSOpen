@@ -164,7 +164,7 @@ const resolvers = {
       return authorToEdit;
     },
     createUser: async (root, args) => {
-      const user = new User({ username: args.username });
+      const user = new User({ username: args.username, favoriteGenre: args.favoriteGenre });
       try {
         user.save();
       } catch (error) {

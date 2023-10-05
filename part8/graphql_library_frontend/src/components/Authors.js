@@ -1,11 +1,7 @@
 import { useState } from "react";
 
-const Authors = ({ show, authors, editAuthor }) => {
+const Authors = ({ authors, editAuthor }) => {
   const [author, setAuthor] = useState({ name: authors[0]?.name, born: "" });
-  if (!show) {
-    return null;
-  }
-
   const submit = (e) => {
     e.preventDefault();
 

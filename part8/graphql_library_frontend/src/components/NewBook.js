@@ -1,15 +1,11 @@
 import { useState } from "react";
 
-const NewBook = ({ show, addBook }) => {
+const NewBook = ({ addBook }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [published, setPublished] = useState("");
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
-
-  if (!show) {
-    return null;
-  }
 
   const submit = async (event) => {
     event.preventDefault();
@@ -30,6 +26,7 @@ const NewBook = ({ show, addBook }) => {
 
   return (
     <div>
+      <h2>Add Book</h2>
       <form onSubmit={submit}>
         <div>
           title
